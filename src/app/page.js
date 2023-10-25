@@ -1,112 +1,110 @@
-import Image from 'next/image'
+"use client"
+
+import React, {useState} from "react";
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue, Input, Button, Pagination} from "@nextui-org/react";
+const columns = [
+  {
+    key: "ano",
+    label: "Ano",
+  },
+  {
+    key: "patrimonio",
+    label: "Patrimonio",
+  },
+  {
+    key: "mensal",
+    label: "Renda Mensal",
+  }
+]
 
 export default function Home() {
+  const [rows, setRows] = useState([])
+  const [entrada, setEntrada] = useState({
+    rentabilidade: 0.00,
+    periodo: 0,
+    aporte: 0,
+    valorInicial: 0
+  })
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 10;
+
+  const pages = 2;
+
+
+  function atualizarEntrada (campo, novoValor) {
+    setEntrada({...entrada, [campo]: novoValor})
+  }
+
+  function adicionar() {
+    let montante=entrada.valorInicial
+    const novasLinhas=[]
+    for (let anos = 0; anos < Number(entrada.periodo); anos++) {
+      for (let meses = 0; meses < 12; meses++) {
+        montante=(montante + Number(entrada.aporte)) * (1+Number(entrada.rentabilidade))
+      }
+      novasLinhas.push({
+        id: anos + 1,
+        ano: new Date().getFullYear() + anos,
+        patrimonio: montante,
+        mensal: montante*0.008
+      })
+    }
+    console.log(novasLinhas.length)
+    setRows(novasLinhas)
+  }
+
+  function limpar () {
+    setRows([])
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className="dark text-foreground bg-background p-4 h-screen">
+      <div className="flex justify-center p-16">
+        <h1 className="text-3xl">Projeção</h1>
+      </div>
+      <div className="flex pb-4">
+        <div className="flex">
+          <Input className="mr-4" type="number" label="Rentabilidade" onValueChange={(novoRent)=>{atualizarEntrada('rentabilidade', novoRent)}}/>
+          <Input className="mr-4" type="number" label="Período (Anos)" onValueChange={(novoAno)=>{atualizarEntrada('periodo', novoAno)}}/>
+          <Input className="mr-4" type="number" label="Aporte" onValueChange={(novoAporte)=>{atualizarEntrada('aporte', novoAporte)}}/>
+          <Input className="mr-4" type="number" label="Valor Inicial" onValueChange={(novoValorInicial)=>{atualizarEntrada('valorInicial', novoValorInicial)}}/>
+        </div>
+        <div className="flex items-center">
+          <Button color="primary" className="mr-4" onClick={()=>{limpar()}}>
+            Limpar
+          </Button>
+          <Button color="success" onClick={()=>{adicionar()}}>
+            Calcular
+          </Button>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="w-full h-80vh">
+        <Table aria-label="Example table with dynamic content" style={{width: '100%'}}
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="secondary"
+                page={page}
+                total={pages}
+                onChange={(page) => setPage(page)}
+              />
+            </div>
+          }>
+          
+          <TableHeader columns={columns} style={{display: 'flex', justifyContent: 'space-between'}}>
+            {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+          </TableHeader>
+          <TableBody emptyContent={'Sem dados'} items={rows}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </main>
   )
