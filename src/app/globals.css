@@ -8,6 +8,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+.max-h-60vh {
+  max-height: 60vh;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

@@ -78,8 +78,8 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="w-full h-80vh">
-        <Table aria-label="Example table with dynamic content" style={{width: '100%'}}
+      <div className="w-full">
+        <Table aria-label="Example table with dynamic content" className="max-h-60vh"
           bottomContent={
             <div className="flex w-full justify-center">
               <Pagination
