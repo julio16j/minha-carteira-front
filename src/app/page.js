@@ -20,36 +20,46 @@ const columns = [
 export default function Home() {
   const [rows, setRows] = useState([])
   const [entrada, setEntrada] = useState({
-    rentabilidade: 0.00,
-    periodo: 0,
-    aporte: 0,
+    rentabilidade: 1,
+    periodo: 10,
+    aporte: 500,
     valorInicial: 0
   })
-  const [page, setPage] = React.useState(1);
-  const rowsPerPage = 10;
 
-  const pages = 2;
-
+  function formatarParaBRL(numero) {
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+  
+    return formatter.format(numero);
+  }
 
   function atualizarEntrada (campo, novoValor) {
     setEntrada({...entrada, [campo]: novoValor})
   }
 
+  function mascaraNumero (novoValor) {
+    return novoValor.replace(/[^0-9.]/g, '')
+  }
+
   function adicionar() {
-    let montante=entrada.valorInicial
+    let montante=Number(entrada.valorInicial)
     const novasLinhas=[]
-    for (let anos = 0; anos < Number(entrada.periodo); anos++) {
+    const aporteMensal = Number(entrada.aporte);
+    const rentabilidadeMensal = 1 + Number(entrada.rentabilidade/100);
+    const periodo = Number(entrada.periodo)
+    for (let anos = 0; anos < periodo; anos++) {
       for (let meses = 0; meses < 12; meses++) {
-        montante=(montante + Number(entrada.aporte)) * (1+Number(entrada.rentabilidade))
+        montante = (montante + aporteMensal) * rentabilidadeMensal;
       }
       novasLinhas.push({
         id: anos + 1,
         ano: new Date().getFullYear() + anos,
-        patrimonio: montante,
-        mensal: montante*0.008
-      })
+        patrimonio: formatarParaBRL(montante),
+        mensal: formatarParaBRL(montante * 0.008)
+      });
     }
-    console.log(novasLinhas.length)
     setRows(novasLinhas)
   }
 
@@ -57,45 +67,35 @@ export default function Home() {
     setRows([])
   }
 
+  function handleEnterKey (event) {
+    if (event.key === 'Enter') {
+      adicionar()
+    }
+  }
+
   return (
     <main className="dark text-foreground bg-background p-4 h-screen">
       <div className="flex justify-center p-16">
         <h1 className="text-3xl">Projeção</h1>
       </div>
-      <div className="flex pb-4">
+      <div className="flex pb-4" onKeyDown={(event)=>handleEnterKey(event)}>
         <div className="flex">
-          <Input className="mr-4" type="number" label="Rentabilidade" onValueChange={(novoRent)=>{atualizarEntrada('rentabilidade', novoRent)}}/>
-          <Input className="mr-4" type="number" label="Período (Anos)" onValueChange={(novoAno)=>{atualizarEntrada('periodo', novoAno)}}/>
-          <Input className="mr-4" type="number" label="Aporte" onValueChange={(novoAporte)=>{atualizarEntrada('aporte', novoAporte)}}/>
-          <Input className="mr-4" type="number" label="Valor Inicial" onValueChange={(novoValorInicial)=>{atualizarEntrada('valorInicial', novoValorInicial)}}/>
+          <Input className="mr-4" label="Rentabilidade (Ao mes)" variant="bordered" value={entrada.rentabilidade || ''} onValueChange={(novoRent)=>{atualizarEntrada('rentabilidade', mascaraNumero(novoRent))}} endContent={'%'}/>
+          <Input className="mr-4" label="Período (Anos)" variant="bordered" value={entrada.periodo || ''} onValueChange={(novoAno)=>{atualizarEntrada('periodo', novoAno)}}/>
+          <Input className="mr-4" label="Aporte" variant="bordered" value={entrada.aporte || ''} onValueChange={(novoAporte)=>{atualizarEntrada('aporte', novoAporte)}}/>
+          <Input className="mr-4" label="Valor Inicial" value={entrada.valorInicial || ''} variant="bordered" onValueChange={(novoValorInicial)=>{atualizarEntrada('valorInicial', novoValorInicial)}}/>
         </div>
         <div className="flex items-center">
           <Button color="primary" className="mr-4" onClick={()=>{limpar()}}>
             Limpar
           </Button>
-          <Button color="success" onClick={()=>{adicionar()}}>
-            Calcular
-          </Button>
         </div>
       </div>
       <div className="w-full">
-        <Table aria-label="Example table with dynamic content" className="max-h-60vh"
-          bottomContent={
-            <div className="flex w-full justify-center">
-              <Pagination
-                isCompact
-                showControls
-                showShadow
-                color="secondary"
-                page={page}
-                total={pages}
-                onChange={(page) => setPage(page)}
-              />
-            </div>
-          }>
+        <Table aria-label="Example table with dynamic content" className="max-h-60vh">
           
           <TableHeader columns={columns} style={{display: 'flex', justifyContent: 'space-between'}}>
-            {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+            {(column) => <TableColumn className="text-lg" key={column.key}>{column.label}</TableColumn>}
           </TableHeader>
           <TableBody emptyContent={'Sem dados'} items={rows}>
             {(item) => (
