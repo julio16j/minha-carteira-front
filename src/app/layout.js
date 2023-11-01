@@ -14,11 +14,26 @@ export default function RootLayout({ children }) {
   const [isActive, setIsActive] = useState({});
 
   const menuItems = [
-    "Resumo Fundo",
-    "Ações",
-    "Fiis",
-    "Caixa",
-    "Projeção",
+    {
+      label: 'Resumo Fundo',
+      link: '/'
+    },
+    {
+      label: 'Ações',
+      link: '/acoes'
+    },
+    {
+      label: 'Fiis',
+      link: '/fiis'
+    },
+    {
+      label: 'Caixa',
+      link: '/caixa'
+    },
+    {
+      label: 'Projeção',
+      link: '/projecao'
+    }
   ]
 
   return (
@@ -63,10 +78,10 @@ export default function RootLayout({ children }) {
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
                   className="w-full"
-                  href="#"
+                  href={item.link}
                   size="lg"
                 >
-                  {item}
+                  {item.label}
                 </Link>
               </NavbarMenuItem>
             ))}
