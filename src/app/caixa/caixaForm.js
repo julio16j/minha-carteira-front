@@ -15,7 +15,7 @@ export default function CaixaForm ({submitCallback, initialValues={}, updateValu
     useEffect(() => {
         if (updateValue) {
             reset(initialValues)
-            setUpdateFalse
+            setUpdateFalse()
         }
     }, [updateValue])
 
