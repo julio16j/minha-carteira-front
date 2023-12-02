@@ -1,11 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue, Link } from "@nextui-org/react";
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { listarCaixa, deleteCaixa } from "@/services/caixaService";
+import React, { useState, useEffect } from "react"
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue, Link } from "@nextui-org/react"
+import AddBoxIcon from '@mui/icons-material/AddBox'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import { handleListarCaixa, handleDeleteCaixa } from "@/services/caixaService"
+import DefaultSnackbar from "@/utils/components/defaultSnackbar"
+import {Spinner} from "@nextui-org/react"
+import { CAIXA_DELETADO_SUCESSO } from "@/utils/constants"
 
 const columns = [
   {
@@ -30,37 +33,37 @@ const columns = [
   }
 ]
 
-async function handleListarCaixa (successCallback, errorCallback ) {
-  try {
-    const listaCaixa = await listarCaixa()
-    successCallback(listaCaixa)
-  } catch (error) {
-    errorCallback(error)
-  }
-}
-
 export default function Caixa() {
+
   const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState('hidden')
+  const [snackbarProps, setSnackbarProps] = useState({open: false, message: CAIXA_DELETADO_SUCESSO})
 
   function successObterCaixaCallback (data) {
+    setLoading('hidden')
     setRows([...data])
   }
 
-  function errorObterCaixaCallback(error) {
+  function errorCallback(error) {
+    setLoading('hidden')
     console.log(error)
   }
 
-  async function onDelete (id) {
-    try {
-      await deleteCaixa(id)
-      handleListarCaixa(successObterCaixaCallback, errorObterCaixaCallback)
-    } catch (error) {
-      console.log(error)
-    }
+  function successDeleteCaixaCallback (id) {
+    setLoading('hidden')
+    setSnackbarProps({open: true, message: CAIXA_DELETADO_SUCESSO})
+    console.log(id)
+    handleListarCaixa(successObterCaixaCallback, errorCallback)
+  }
+
+  function onDelete(item) {
+    setLoading('')
+    handleDeleteCaixa(item.id, successDeleteCaixaCallback, errorCallback)
   }
 
   useEffect(() => {
-    handleListarCaixa(successObterCaixaCallback, errorObterCaixaCallback)
+    setLoading('')
+    handleListarCaixa(successObterCaixaCallback, errorCallback)
   }, []);
 
   return (
@@ -83,7 +86,7 @@ export default function Caixa() {
                         <Link className="cursor-pointer" href={`caixa/${item.id}`}>
                           <EditIcon />
                         </Link>
-                        <Link className="cursor-pointer" onClick={()=>onDelete(item.id)}>
+                        <Link className="cursor-pointer" onClick={()=>onDelete(item)}>
                           <DeleteIcon className="ml-1" />
                         </Link>
                       </TableCell>
@@ -94,12 +97,17 @@ export default function Caixa() {
         </Table>
       </div>
       <div className="flex mt-4 justify-center w-full">
-          <Link className="cursor-pointer" href="caixa/novo-caixa">
-            Adicionar
-            <AddBoxIcon className="ml-1" />
-          </Link>
+        <Link className="cursor-pointer" href="caixa/novo-caixa">
+          Adicionar
+          <AddBoxIcon className="ml-1" />
+        </Link>
       </div>
+      <div className={`absolute h-screen w-[95vw] top-0 bg-gray ${loading}`}>
+        <div className="flex h-[100%] w-[100%] items-center justify-center">
+          <Spinner color="white"/>
+        </div>
+      </div>
+      <DefaultSnackbar props={snackbarProps} setProps={setSnackbarProps} />
     </main>
   )
-
 }

@@ -20,18 +20,55 @@ const mockCaixaRows = [
     },
   ]
 
-export async function listarCaixa () {
-  return mockCaixaRows
-}
-
-export async function obterCaixaPorId (id) {
+  
+async function obterCaixaPorId (id) {
   return mockCaixaRows[0]
 }
+  
+async function novoCaixa (caixa) {
+  return
+}
 
-export async function deleteCaixa (id) {
+async function deleteCaixa (id) {
   return id
 }
 
-export async function novoCaixa (caixa) {
-  return
+async function listarCaixa () {
+  return mockCaixaRows
+}
+
+export async function handleNovoCaixa (data, successCallback, errorCallback) {
+  try {
+      await novoCaixa(data)
+      successCallback()
+    } catch (error) {
+      errorCallback(error)
+    }
+}
+
+export async function handleObterCaixaPorId (id, successCallback, errorCallback) {
+  try {
+      let caixa = await obterCaixaPorId(id)
+      successCallback(caixa)
+    } catch (error) {
+      errorCallback(error)
+    }
+}
+
+export async function handleListarCaixa (successCallback, errorCallback ) {
+  try {
+    const listaCaixa = await listarCaixa()
+    successCallback(listaCaixa)
+  } catch (error) {
+    errorCallback(error)
+  }
+}
+
+export async function handleDeleteCaixa (id,successCallback, errorCallback) {
+  try {
+    await deleteCaixa(id)
+    successCallback(id)
+  } catch (error) {
+    errorCallback(error)
+  }
 }
