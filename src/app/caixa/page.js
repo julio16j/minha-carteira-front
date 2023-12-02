@@ -30,7 +30,7 @@ const columns = [
   }
 ]
 
-async function obterListaCaixa (successCallback, errorCallback ) {
+async function handleListarCaixa (successCallback, errorCallback ) {
   try {
     const listaCaixa = await listarCaixa()
     successCallback(listaCaixa)
@@ -53,14 +53,14 @@ export default function Caixa() {
   async function onDelete (id) {
     try {
       await deleteCaixa(id)
-      obterListaCaixa(successObterCaixaCallback, errorObterCaixaCallback)
+      handleListarCaixa(successObterCaixaCallback, errorObterCaixaCallback)
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    obterListaCaixa(successObterCaixaCallback, errorObterCaixaCallback)
+    handleListarCaixa(successObterCaixaCallback, errorObterCaixaCallback)
   }, []);
 
   return (

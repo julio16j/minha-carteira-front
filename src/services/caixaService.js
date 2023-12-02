@@ -3,7 +3,7 @@ const mockCaixaRows = [
       id: 1,
       nome: 'Saldo Clear',
       valor: 10,
-      rentabilidade: 0,
+      rentabilidade: '0',
       liquidez: 'D+1'
     }, {
       id: 2,
@@ -21,9 +21,17 @@ const mockCaixaRows = [
   ]
 
 export async function listarCaixa () {
-    return mockCaixaRows
+  return mockCaixaRows
+}
+
+export async function obterCaixaPorId (id) {
+  return mockCaixaRows[0]
 }
 
 export async function deleteCaixa (id) {
-    return id
+  return id
+}
+
+export async function novoCaixa (caixa) {
+  return
 }
