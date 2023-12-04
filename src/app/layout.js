@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
   ]
 
   return (
-    <html>
+    <html style={{backgroundColor: 'black'}}>
       <body className={inter.className}>
         <Navbar onMenuOpenChange={setIsMenuOpen} className='dark bg-background text-foreground'>
           <NavbarContent>

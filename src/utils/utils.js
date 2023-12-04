@@ -14,15 +14,15 @@ export function formatarParaBRL(numero) {
 }
 
 export function formatarLucro(lucro) {
-    let lucroPercentual = lucro * 100
+    let lucroPercentual = (lucro * 100).toFixed(2)
     if (lucro > 0) {
-        return <div className="text-success">{lucroPercentual + '%'}</div>
+        return <p className="text-success">{lucroPercentual + '%'}</p>
     }
 
     if (lucro < 0) {
-        return <div className="text-danger">{lucroPercentual + '%'}</div>
+        return <p className="text-danger">{lucroPercentual + '%'}</p>
     }
 
-    return <div>{lucroPercentual + '%'}</div>
+    return <p>{lucroPercentual + '%'}</p>
 
 }

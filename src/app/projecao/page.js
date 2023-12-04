@@ -62,14 +62,14 @@ export default function Home() {
       <div className="flex justify-center p-16">
         <h1 className="text-3xl">Projeção</h1>
       </div>
-      <div className="flex pb-4" onKeyDown={(event)=>handleEnterKey(event, adicionar)}>
-        <div className="flex">
+      <div className="flex pb-4 flex-col gap-2 md:flex-row" onKeyDown={(event)=>handleEnterKey(event, adicionar)}>
+        <div className="flex flex-col gap-2 md:flex-row">
           <Input className="mr-4" type="number" label="Rentabilidade (Ao mes)" variant="bordered" value={entrada.rentabilidade || ''} onValueChange={(novoRent)=>{atualizarEntrada('rentabilidade', novoRent)}} endContent={'%'}/>
           <Input className="mr-4" label="Período (Anos)" variant="bordered" value={entrada.periodo || ''} onValueChange={(novoAno)=>{atualizarEntrada('periodo', novoAno)}}/>
           <Input className="mr-4" type="number" label="Aporte" variant="bordered" value={entrada.aporte || ''} onValueChange={(novoAporte)=>{atualizarEntrada('aporte', novoAporte)}}/>
           <Input className="mr-4" type="number" label="Valor Inicial" value={entrada.valorInicial || ''} variant="bordered" onValueChange={(novoValorInicial)=>{atualizarEntrada('valorInicial', novoValorInicial)}}/>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-center gap-16 md:gap-0">
           <Button variant="outlied" isIconOnly className="mr-4 h-full w-30" onClick={()=>{limpar()}}>
             <CleaningServicesIcon />
           </Button>
