@@ -9,6 +9,12 @@ export function gerarResumo (data) {
     return resumo
   }
 
+export function gerarResumoFii (data) {
+    let resumo = gerarResumo(data)
+    resumo.rendaMensal = resumo.rendaAnual / 12
+    return resumo
+}
+
 function totalizarYield(data, resultadoPreco) {
     return data.reduce(
         (totalizador, ativo) => {
