@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
 
   const menuItems = [
     {
-      label: 'Resumo Fundo',
+      label: 'Dashboard',
       link: '/'
     },
     {
@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
           <NavbarContent className='hidden sm:flex' justify='end'>
             <NavbarItem>
                 <Link href="/">
-                  Resumo Fundo
+                  Dashboard
                 </Link>
               </NavbarItem>
               <NavbarItem>

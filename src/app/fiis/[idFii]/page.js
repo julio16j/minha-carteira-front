@@ -6,30 +6,30 @@ import { useRouter } from 'next/navigation'
 
 import FiiForm from "../fiiForm";
 import DefaultSnackbar from "@/utils/components/defaultSnackbar"
-import { FII_INSERIDO_SUCESSO, FII_FALHA_INSERIR } from "@/utils/constants"
-import { handleNovoFii, handleObterFiiPorId } from "@/services/fiiService"
+import { FII_EDITADO_SUCESSO, FII_FALHA_EDITAR } from "@/utils/constants"
+import { handleAtualizarFii, handleObterFiiPorId } from "@/services/fiiService"
 
 export default function EditarFii ({params: {idFii}}) {
     const [loading, setLoading] = useState('hidden')
-    const [snackbarProps, setSnackbarProps] = useState({open: false, message: FII_INSERIDO_SUCESSO})
+    const [snackbarProps, setSnackbarProps] = useState({open: false, message: FII_EDITADO_SUCESSO})
     const [fiiObtido, setFiiObtido] = useState({})
     const [updateForm, setUpdateForm] = useState(false)
     const router = useRouter()
     
     function adicionar (data) {
         setLoading('')
-        handleNovoFii(data, saveSuccessCallback, saveErrorCallback)
+        handleAtualizarFii(idFii, data, saveSuccessCallback, saveErrorCallback)
     }
     
     function saveErrorCallback(error) {
         console.log(error)
         setLoading('hidden')
-        setSnackbarProps({open: true, message: FII_FALHA_INSERIR})
+        setSnackbarProps({open: true, message: FII_FALHA_EDITAR})
     }
 
     function saveSuccessCallback () {
         setLoading('hidden')
-        setSnackbarProps({open: true, message: FII_INSERIDO_SUCESSO})
+        setSnackbarProps({open: true, message: FII_EDITADO_SUCESSO})
         router.push('/fiis')
     }
 

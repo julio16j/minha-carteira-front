@@ -76,7 +76,7 @@ export default function NovoAporte() {
           <TableBody emptyContent={'Sem dados'} items={rows}>
             {(item) => (
               <TableRow key={item.id}>
-                {(columnKey) => <TableCell className="text-center" >{columnKey=='preco' || columnKey=='total'
+                {(columnKey) => <TableCell>{columnKey=='preco' || columnKey=='total'
                   ? formatarParaBRL(getKeyValue(item, columnKey))
                   : getKeyValue(item, columnKey)}
                 </TableCell>}

@@ -66,6 +66,7 @@ export default function Acoes() {
     }
   };
 
+
   function atualizarPrecoAtivos (ativos) {
     ativos.forEach(ativo => {
       handleObterPrecoAtivo(ativo.ticker, (resultado) =>successObterPrecoAtivoCallback(resultado, ativos), errorCallback)

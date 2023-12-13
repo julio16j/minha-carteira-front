@@ -1,80 +1,37 @@
-const mockAcoesRows = [
-  {
-    id: 1,
-    ticker: 'WEGE3',
-    preco: 31.5,
-    quantidade: 400,
-    total:  12600,
-    lucro: 0.05,
-    precoMedio: 30,
-    nota: 10,
-    setor: 'INDUSTRIAL',
-    yield: 10.5
-  }, {
-    id: 2,
-    ticker: 'ITSA4',
-    preco: 10,
-    quantidade: 800,
-    total:  8000,
-    lucro: 0,
-    precoMedio: 10,
-    nota: 2,
-    setor: 'BANCO',
-    yield: 5.5
-  }, {
-    id: 3,
-    ticker: 'LREN3',
-    preco: 14.25,
-    quantidade: 500,
-    total:  7125,
-    lucro: -0.05,
-    precoMedio: 15,
-    nota: 5,
-    setor: 'VAREJO',
-    yield: 4
-  },
-  ]
+import MinhaCarteiraClientInstance from "@/clients/minhaCarteiraClient"
+import { TIPO_ATIVO_ACAO } from "@/utils/constants"
 
-const mockAcoesAporte = [
-  {
-    id: 1,
-    ticker: 'WEGE3',
-    preco: 30,
-    quantidadeNova: 20,
-    total:  600
-  }, {
-    id: 2,
-    ticker: 'ITSA4',
-    preco: 10,
-    quantidadeNova:30,
-    total:  300
-  }, {
-    id: 3,
-    ticker: 'LREN3',
-    preco: 15,
-    quantidadeNova: 20,
-    total:  300
-  }
-]
+const acaoService = {
+  endpoint: 'ativo',
+  listarAcoes: () => `${acaoService.endpoint}/tipo-ativo/${TIPO_ATIVO_ACAO}`,
+  obterAcaoPorId: (id) => `${acaoService.endpoint}/${id}`,
+  atualizarAcao: (id) => `${acaoService.endpoint}/${id}`,
+  deletarAcao: (id) => `${acaoService.endpoint}/${id}`,
+  calcularNovoAporte: (valor) => `${acaoService.endpoint}/calcular-aporte/${valor}/${TIPO_ATIVO_ACAO}`,
+}
 
 async function calcularNovoAporte (valor) {
-  return mockAcoesAporte
+  return MinhaCarteiraClientInstance.get(acaoService.calcularNovoAporte(valor))
 }
 
-async function obterAcoesPorId (id) {
-  return mockAcoesRows[0]
+async function obterAcaoPorId (id) {
+  return MinhaCarteiraClientInstance.get(acaoService.obterAcaoPorId(id))
 }
   
-async function novaAcao (acoes) {
-  return
+async function novaAcao (acao) {
+  return MinhaCarteiraClientInstance.post(acaoService.endpoint, {...acao, tipoAtivo: TIPO_ATIVO_ACAO})
+}
+
+async function atualizarAcao (id, acao) {
+  return MinhaCarteiraClientInstance.put(acaoService.atualizarAcao(id), {...acao, tipoAtivo: TIPO_ATIVO_ACAO})
 }
 
 async function deleteAcoes (id) {
-  return id
+  return MinhaCarteiraClientInstance.delete(acaoService.deletarAcao(id))
 }
 
-async function listarAcoes () {
-  return mockAcoesRows
+function listarAcoes () {
+  return MinhaCarteiraClientInstance.get(acaoService.listarAcoes())
 }
 
 export async function handleNovaAcao (data, successCallback, errorCallback) {
@@ -86,10 +43,19 @@ export async function handleNovaAcao (data, successCallback, errorCallback) {
     }
 }
 
+export async function handleAtualizarAcao (id, data, successCallback, errorCallback) {
+  try {
+      await atualizarAcao(id, data)
+      successCallback()
+    } catch (error) {
+      errorCallback(error)
+    }
+}
+
 export async function handleObterAcaoPorId (id, successCallback, errorCallback) {
   try {
-      let acao = await obterAcoesPorId(id)
-      successCallback(acao)
+      let resposta = await obterAcaoPorId(id)
+      successCallback(resposta.data)
     } catch (error) {
       errorCallback(error)
     }
@@ -98,7 +64,7 @@ export async function handleObterAcaoPorId (id, successCallback, errorCallback) 
 export async function handleCalcularNovoAporte (valor, successCallback, errorCallback) {
   try {
       let resultado = await calcularNovoAporte(valor)
-      successCallback(resultado)
+      successCallback(resultado.data)
     } catch (error) {
       errorCallback(error)
     }
@@ -106,8 +72,8 @@ export async function handleCalcularNovoAporte (valor, successCallback, errorCal
 
 export async function handleListarAcoes (successCallback, errorCallback ) {
   try {
-    const listaAcoes = await listarAcoes()
-    successCallback(listaAcoes)
+    const resposta = await listarAcoes()
+    successCallback(resposta.data)
   } catch (error) {
     errorCallback(error)
   }

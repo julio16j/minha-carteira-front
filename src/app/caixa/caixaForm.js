@@ -29,7 +29,7 @@ export default function CaixaForm ({submitCallback, initialValues={}, updateValu
                     )}
                 </div>
                 <div className="flex flex-col max-w-[13rem]">
-                    <Input type="number" label="Valor" variant="bordered" {...register('valor')} placeholder="Insira o valor" />
+                    <Input type="number" label="Valor" step="0.01" variant="bordered" {...register('valor')} placeholder="Insira o valor" />
                     {errors.valor && (
                     <p className="text-xs italic text-red-500 mt-2"> {errors.valor?.message}</p>
                     )}

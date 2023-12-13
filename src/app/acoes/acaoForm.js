@@ -35,7 +35,7 @@ export default function AcaoForm ({submitCallback, initialValues={}, updateValue
                     )}
                 </div>
                 <div className="flex flex-col max-w-[13rem]">
-                    <Input type="number" label="Preço médio" variant="bordered" {...register('precoMedio')} placeholder="Insira o precoMedio" />
+                    <Input type="number" label="Preço médio" step="0.01" variant="bordered" {...register('precoMedio')} placeholder="Insira o precoMedio" />
                     {errors.precoMedio && (
                     <p className="text-xs italic text-red-500 mt-2"> {errors.precoMedio?.message}</p>
                     )}

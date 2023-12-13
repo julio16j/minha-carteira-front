@@ -39,7 +39,7 @@ function totalizarPreco(data) {
 
 export function gerarDataPieChart (data) {
     let dataPieChart = [
-        ['Seto', 'Total por setor']
+        ['Setor', 'Total por setor']
     ]
     const resultadoFinal = data.reduce((lista, ativo) => {
         const indice = lista.findIndex(item => item[0] === ativo.setor);

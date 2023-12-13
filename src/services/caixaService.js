@@ -1,40 +1,30 @@
-const mockCaixaRows = [
-    {
-      id: 1,
-      nome: 'Saldo Clear',
-      valor: 10,
-      rentabilidade: '0',
-      liquidez: 'D+1'
-    }, {
-      id: 2,
-      nome: 'Tesouro',
-      valor: 100,
-      rentabilidade: '100% CDI',
-      liquidez: 'Diária'
-    }, {
-      id: 3,
-      nome: 'LCA XP',
-      valor: 1000,
-      rentabilidade: '90% CDI',
-      liquidez: 'Diaria após 90 dias'
-    },
-  ]
+import MinhaCarteiraClientInstance from "@/clients/minhaCarteiraClient"
 
-  
+const caixaService = {
+  endpoint: 'caixa',
+  obterCaixaPorId: (id) => `${caixaService.endpoint}/${id}`,
+  atualizarCaixa: (id) => `${caixaService.endpoint}/${id}`,
+  deletarCaixa: (id) => `${caixaService.endpoint}/${id}`
+}
+
 async function obterCaixaPorId (id) {
-  return mockCaixaRows[0]
+  return MinhaCarteiraClientInstance.get(caixaService.obterCaixaPorId(id))
 }
   
 async function novoCaixa (caixa) {
-  return
+  return MinhaCarteiraClientInstance.post(caixaService.endpoint, caixa)
+}
+
+async function atualizarCaixa (id, caixa) {
+  return MinhaCarteiraClientInstance.put(caixaService.atualizarCaixa(id), caixa)
 }
 
 async function deleteCaixa (id) {
-  return id
+  return MinhaCarteiraClientInstance.delete(caixaService.deletarCaixa(id))
 }
 
 async function listarCaixa () {
-  return mockCaixaRows
+  return MinhaCarteiraClientInstance.get(caixaService.endpoint)
 }
 
 export async function handleNovoCaixa (data, successCallback, errorCallback) {
@@ -46,10 +36,19 @@ export async function handleNovoCaixa (data, successCallback, errorCallback) {
     }
 }
 
+export async function handleAtualizarCaixa (id, data, successCallback, errorCallback) {
+  try {
+      await atualizarCaixa(id, data)
+      successCallback()
+    } catch (error) {
+      errorCallback(error)
+    }
+}
+
 export async function handleObterCaixaPorId (id, successCallback, errorCallback) {
   try {
-      let caixa = await obterCaixaPorId(id)
-      successCallback(caixa)
+      let resposta = await obterCaixaPorId(id)
+      successCallback(resposta.data)
     } catch (error) {
       errorCallback(error)
     }
@@ -57,8 +56,8 @@ export async function handleObterCaixaPorId (id, successCallback, errorCallback)
 
 export async function handleListarCaixa (successCallback, errorCallback ) {
   try {
-    const listaCaixa = await listarCaixa()
-    successCallback(listaCaixa)
+    const resposta = await listarCaixa()
+    successCallback(resposta.data)
   } catch (error) {
     errorCallback(error)
   }

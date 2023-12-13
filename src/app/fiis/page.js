@@ -138,7 +138,7 @@ export default function Fiis() {
         </Table>
       </div>
       <div className="flex mt-4 w-full px-4 justify-center gap-4 xl:px-52 xl:justify-between">
-        <Link className="cursor-pointer" href="fiis/nova-acao">
+        <Link className="cursor-pointer" href="fiis/novo-fii">
           Adicionar
           <AddBoxIcon className="ml-1" />
         </Link>

@@ -1,85 +1,51 @@
-const mocFiisRows = [
-  {
-    id: 1,
-    ticker: 'MXRF11',
-    preco: 10.5,
-    quantidade: 4000,
-    total:  42000,
-    lucro: 0.05,
-    precoMedio: 10,
-    nota: 10,
-    setor: 'PAPEL',
-    yield: 13.11
-  }, {
-    id: 2,
-    ticker: 'IRDM11',
-    preco: 77,
-    quantidade: 800,
-    total:  61600,
-    lucro: 0.1,
-    precoMedio: 70,
-    nota: 2,
-    setor: 'PAPEL',
-    yield: 13.46
-  }, {
-    id: 3,
-    ticker: 'HGLG11',
-    preco: 172.5,
-    quantidade: 500,
-    total:  86250,
-    lucro: 0.15,
-    precoMedio: 150,
-    nota: 5,
-    setor: 'LOGÍSTICA',
-    yield: 9.15
-  },
-  ]
+import MinhaCarteiraClientInstance from "@/clients/minhaCarteiraClient"
+import { TIPO_ATIVO_FII } from "@/utils/constants"
 
-const mocFiisAporte = [
-  {
-    id: 1,
-    ticker: 'MXRF11',
-    preco: 10,
-    quantidadeNova: 200,
-    total:  2000
-  }, {
-    id: 2,
-    ticker: 'IRDM11',
-    preco: 70,
-    quantidadeNova:30,
-    total:  2100
-  }, {
-    id: 3,
-    ticker: 'HGLG11',
-    preco: 150,
-    quantidadeNova: 20,
-    total:  3000
-  }
-]
+const fiiService = {
+  endpoint: 'ativo',
+  listarFiis: () => `${fiiService.endpoint}/tipo-ativo/${TIPO_ATIVO_FII}`,
+  obterFiiPorId: (id) => `${fiiService.endpoint}/${id}`,
+  atualizarFii: (id) => `${fiiService.endpoint}/${id}`,
+  deletarFii: (id) => `${fiiService.endpoint}/${id}`,
+  calcularNovoAporte: (valor) => `${fiiService.endpoint}/calcular-aporte/${valor}/${TIPO_ATIVO_FII}`,
+}
 
 async function calcularNovoAporte (valor) {
-  return mocFiisAporte
+  return MinhaCarteiraClientInstance.get(fiiService.calcularNovoAporte(valor))
 }
 
-async function obteFiisPorId (id) {
-  return mocFiisRows[0]
+async function obterFiiPorId (id) {
+  return MinhaCarteiraClientInstance.get(fiiService.obterFiiPorId(id))
 }
   
-async function novoFii (fiis) {
-  return
+async function novaFii (fii) {
+  return MinhaCarteiraClientInstance.post(fiiService.endpoint, {...fii, tipoAtivo: TIPO_ATIVO_FII})
 }
 
-async function deletFiis (id) {
-  return id
+async function atualizarFii (id, fii) {
+  return MinhaCarteiraClientInstance.put(fiiService.atualizarFii(id), {...fii, tipoAtivo: TIPO_ATIVO_FII})
 }
 
-async function listaFiis () {
-  return mocFiisRows
+async function deletarFii (id) {
+  return MinhaCarteiraClientInstance.delete(fiiService.deletarFii(id))
+}
+
+function listarFiis () {
+  return MinhaCarteiraClientInstance.get(fiiService.listarFiis())
 }
 
 export async function handleNovoFii (data, successCallback, errorCallback) {
   try {
-      await novoFii(data)
+      await novaFii(data)
+      successCallback()
+    } catch (error) {
+      errorCallback(error)
+    }
+}
+
+export async function handleAtualizarFii (id, data, successCallback, errorCallback) {
+  try {
+      await atualizarFii(id, data)
       successCallback()
     } catch (error) {
       errorCallback(error)
@@ -88,8 +54,8 @@ export async function handleNovoFii (data, successCallback, errorCallback) {
 
 export async function handleObterFiiPorId (id, successCallback, errorCallback) {
   try {
-      let fii = await obteFiisPorId(id)
-      successCallback(fii)
+      let resposta = await obterFiiPorId(id)
+      successCallback(resposta.data)
     } catch (error) {
       errorCallback(error)
     }
@@ -98,7 +64,7 @@ export async function handleObterFiiPorId (id, successCallback, errorCallback) {
 export async function handleCalcularNovoAporte (valor, successCallback, errorCallback) {
   try {
       let resultado = await calcularNovoAporte(valor)
-      successCallback(resultado)
+      successCallback(resultado.data)
     } catch (error) {
       errorCallback(error)
     }
@@ -106,8 +72,8 @@ export async function handleCalcularNovoAporte (valor, successCallback, errorCal
 
 export async function handleListarFiis (successCallback, errorCallback ) {
   try {
-    const listFiis = await listaFiis()
-    successCallback(listFiis)
+    const resposta = await listarFiis()
+    successCallback(resposta.data)
   } catch (error) {
     errorCallback(error)
   }
@@ -115,7 +81,7 @@ export async function handleListarFiis (successCallback, errorCallback ) {
 
 export async function handleDeleteFii (id,successCallback, errorCallback) {
   try {
-    await deletFiis(id)
+    await deletarFii(id)
     successCallback(id)
   } catch (error) {
     errorCallback(error)

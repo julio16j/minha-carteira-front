@@ -6,30 +6,30 @@ import { useRouter } from 'next/navigation'
 
 import AcaoForm from "../acaoForm";
 import DefaultSnackbar from "@/utils/components/defaultSnackbar"
-import { ACAO_INSERIDO_SUCESSO, ACAO_FALHA_INSERIR } from "@/utils/constants"
-import { handleNovaAcao, handleObterAcaoPorId } from "@/services/acaoService"
+import { ACAO_EDITADA_SUCESSO, ACAO_FALHA_EDITAR } from "@/utils/constants"
+import { handleAtualizarAcao, handleObterAcaoPorId } from "@/services/acaoService"
 
 export default function EditarAcao ({params: {idAcao}}) {
     const [loading, setLoading] = useState('hidden')
-    const [snackbarProps, setSnackbarProps] = useState({open: false, message: ACAO_INSERIDO_SUCESSO})
+    const [snackbarProps, setSnackbarProps] = useState({open: false, message: ACAO_EDITADA_SUCESSO})
     const [acaoObtida, setAcaoObtido] = useState({})
     const [updateForm, setUpdateForm] = useState(false)
     const router = useRouter()
     
-    function adicionar (data) {
+    function atualizar (data) {
         setLoading('')
-        handleNovaAcao(data, saveSuccessCallback, saveErrorCallback)
+        handleAtualizarAcao(idAcao, data, saveSuccessCallback, saveErrorCallback)
     }
     
     function saveErrorCallback(error) {
         console.log(error)
         setLoading('hidden')
-        setSnackbarProps({open: true, message: ACAO_FALHA_INSERIR})
+        setSnackbarProps({open: true, message: ACAO_FALHA_EDITAR})
     }
 
     function saveSuccessCallback () {
         setLoading('hidden')
-        setSnackbarProps({open: true, message: ACAO_INSERIDO_SUCESSO})
+        setSnackbarProps({open: true, message: ACAO_EDITADA_SUCESSO})
         router.push('/acoes')
     }
 
@@ -54,7 +54,7 @@ export default function EditarAcao ({params: {idAcao}}) {
             <div className="flex justify-center p-16">
                 <h1 className="text-3xl text-center">Editar Ação</h1>
             </div>
-            <AcaoForm submitCallback={adicionar} initialValues={acaoObtida} updateValue={updateForm} setUpdateFalse={()=>setUpdateForm(false)} />
+            <AcaoForm submitCallback={atualizar} initialValues={acaoObtida} updateValue={updateForm} setUpdateFalse={()=>setUpdateForm(false)} />
             <div className={`absolute h-screen w-[95vw] top-0 bg-gray ${loading}`}>
                 <div className="flex h-[100%] w-[100%] items-center justify-center">
                     <Spinner color="white"/>
