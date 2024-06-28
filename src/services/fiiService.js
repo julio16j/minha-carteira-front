@@ -8,6 +8,7 @@ const fiiService = {
   atualizarFii: (id) => `${fiiService.endpoint}/${id}`,
   deletarFii: (id) => `${fiiService.endpoint}/${id}`,
   calcularNovoAporte: (valor) => `${fiiService.endpoint}/calcular-aporte/${valor}/${TIPO_ATIVO_FII}`,
+  makeDock: () => `${fiiService.endpoint}/novo-aporte`
 }
 
 async function calcularNovoAporte (valor) {
@@ -32,6 +33,10 @@ async function deletarFii (id) {
 
 function listarFiis () {
   return MinhaCarteiraClientInstance.get(fiiService.listarFiis())
+}
+
+async function makeDock (item) {
+  return MinhaCarteiraClientInstance.put(fiiService.makeDock(), {...item})
 }
 
 export async function handleNovoFii (data, successCallback, errorCallback) {
@@ -83,6 +88,15 @@ export async function handleDeleteFii (id,successCallback, errorCallback) {
   try {
     await deletarFii(id)
     successCallback(id)
+  } catch (error) {
+    errorCallback(error)
+  }
+}
+
+export async function handleMakeDock (item, successCallback, errorCallback) {
+  try {
+    await makeDock(item)
+    successCallback()
   } catch (error) {
     errorCallback(error)
   }

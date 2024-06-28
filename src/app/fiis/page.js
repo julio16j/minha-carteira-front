@@ -1,19 +1,20 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link, Card, CardHeader, CardBody, Divider } from "@nextui-org/react"
+import { Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link, Card, CardHeader, CardBody, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react"
 import AddBoxIcon from '@mui/icons-material/AddBox'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import DefaultSnackbar from "@/utils/components/defaultSnackbar"
 import {Spinner} from "@nextui-org/react"
-import { FII_DELETADO_SUCESSO } from "@/utils/constants"
+import { FII_DELETADO_SUCESSO, APORTE_SUCESSO } from "@/utils/constants"
 import { formatarParaBRL, formatarLucro } from "@/utils/utils"
 import CelulaFii from "./fiiCelula"
 import { Chart } from "react-google-charts"
 import ToggleVisible from "@/utils/components/toggleVisible"
 import { gerarResumoFii, gerarDataPieChart, calculaLucro } from "@/utils/calculoUtil"
-import { handleListarFiis, handleDeleteFii } from "@/services/fiiService"
+import { handleListarFiis, handleDeleteFii, handleMakeDock } from "@/services/fiiService"
 import { handleObterPrecoAtivo } from "@/services/bolsaService"
+import Fii1Dock from "./fiiDock"
 
 const columns = [
   {
@@ -46,6 +47,9 @@ export default function Fiis() {
 
   const [rows, setRows] = useState([])
   const [resumo, setResumo] = useState({})
+  const [selectedDock, setSelectedDock] = useState({})
+  const [updateDock, setUpdateDock] = useState(false)
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [loading, setLoading] = useState('hidden')
   const [snackbarProps, setSnackbarProps] = useState({open: false, message: FII_DELETADO_SUCESSO})
 
@@ -110,6 +114,24 @@ export default function Fiis() {
     handleDeleteFii(item.id, successDeleteFiisCallback, errorCallback)
   }
 
+  function onDock (item) {
+    setSelectedDock({...item, quantidade: 0, preco:0})
+    setUpdateDock(true)
+    onOpen()
+  }
+
+  function makeDock (item) {
+    setLoading('')
+    onClose()
+    handleMakeDock(item, successMakeDock, errorCallback)
+  }
+
+  function successMakeDock () {
+    setLoading('hidden')
+    setSnackbarProps({open: true, message: APORTE_SUCESSO})
+    handleListarFiis(successObterFiisCallback, errorCallback)
+  } 
+
   useEffect(() => {
     setLoading('')
     handleListarFiis(successObterFiisCallback, errorCallback)
@@ -120,6 +142,14 @@ export default function Fiis() {
       <div className="flex justify-center p-4 md:p-16">
         <h1 className="text-3xl">Fiis</h1>
       </div>
+      <Modal className="dark text-foreground bg-background" isOpen={isOpen} onClose={onClose} style={{backgroundColor: '#181818'}}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">Novo Aporte</ModalHeader>
+          <ModalBody>
+            <Fii1Dock submitCallback={makeDock} initialValues={selectedDock} updateValue={updateDock} setUpdateFalse={()=>setUpdateDock(false)}/>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <div className="w-full">
         <Table aria-label="Tabela de fiis" className="max-h-60vh">
           <TableHeader columns={columns} style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -129,7 +159,7 @@ export default function Fiis() {
               {rows.map((row) =>
               <TableRow key={row.id}>
                 {(columnKey) => <TableCell>
-                    <CelulaFii item={row} columnKey={columnKey} editLink={`fiis/${row.id}`} onDelete={onDelete} />
+                    <CelulaFii item={row} columnKey={columnKey} editLink={`fiis/${row.id}`} onDelete={onDelete} onDock={onDock} />
                   </TableCell>
                 }
               </TableRow>

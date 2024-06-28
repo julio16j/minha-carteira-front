@@ -8,6 +8,7 @@ const acaoService = {
   atualizarAcao: (id) => `${acaoService.endpoint}/${id}`,
   deletarAcao: (id) => `${acaoService.endpoint}/${id}`,
   calcularNovoAporte: (valor) => `${acaoService.endpoint}/calcular-aporte/${valor}/${TIPO_ATIVO_ACAO}`,
+  makeDock: () => `${acaoService.endpoint}/novo-aporte`
 }
 
 async function calcularNovoAporte (valor) {
@@ -28,6 +29,10 @@ async function atualizarAcao (id, acao) {
 
 async function deleteAcoes (id) {
   return MinhaCarteiraClientInstance.delete(acaoService.deletarAcao(id))
+}
+
+async function makeDock (item) {
+  return MinhaCarteiraClientInstance.put(acaoService.makeDock(), {...item})
 }
 
 function listarAcoes () {
@@ -83,6 +88,15 @@ export async function handleDeleteAcao (id,successCallback, errorCallback) {
   try {
     await deleteAcoes(id)
     successCallback(id)
+  } catch (error) {
+    errorCallback(error)
+  }
+}
+
+export async function handleMakeDock (item, successCallback, errorCallback) {
+  try {
+    await makeDock(item)
+    successCallback()
   } catch (error) {
     errorCallback(error)
   }

@@ -1,19 +1,20 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link, Card, CardHeader, CardBody, Divider } from "@nextui-org/react"
+import { Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link, Card, CardHeader, CardBody, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react"
 import AddBoxIcon from '@mui/icons-material/AddBox'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import DefaultSnackbar from "@/utils/components/defaultSnackbar"
 import {Spinner} from "@nextui-org/react"
-import { ACAO_DELETADO_SUCESSO } from "@/utils/constants"
+import { ACAO_DELETADO_SUCESSO, APORTE_SUCESSO } from "@/utils/constants"
 import { formatarParaBRL, formatarLucro } from "@/utils/utils"
 import CelulaAcao from "./acaoCelula"
 import { Chart } from "react-google-charts"
 import ToggleVisible from "@/utils/components/toggleVisible"
 import { gerarResumo, gerarDataPieChart, calculaLucro } from "@/utils/calculoUtil"
-import { handleListarAcoes, handleDeleteAcao } from "@/services/acaoService"
+import { handleListarAcoes, handleDeleteAcao, handleMakeDock } from "@/services/acaoService"
 import { handleObterPrecoAtivo } from "@/services/bolsaService"
+import AcaoDock from "./acaoDock"
 
 const columns = [
   {
@@ -45,6 +46,9 @@ const columns = [
 export default function Acoes() {
 
   const [rows, setRows] = useState([])
+  const [selectedDock, setSelectedDock] = useState({})
+  const [updateDock, setUpdateDock] = useState(false)
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [resumo, setResumo] = useState({})
   const [loading, setLoading] = useState('hidden')
   const [snackbarProps, setSnackbarProps] = useState({open: false, message: ACAO_DELETADO_SUCESSO})
@@ -112,6 +116,24 @@ export default function Acoes() {
     handleDeleteAcao(item.id, successDeleteAcoesCallback, errorCallback)
   }
 
+  function onDock (item) {
+    setSelectedDock({...item, quantidade: 0, preco:0})
+    setUpdateDock(true)
+    onOpen()
+  }
+
+  function makeDock (item) {
+    setLoading('')
+    onClose()
+    handleMakeDock(item, successMakeDock, errorCallback)
+  }
+
+  function successMakeDock () {
+    setLoading('hidden')
+    setSnackbarProps({open: true, message: APORTE_SUCESSO})
+    handleListarAcoes(successObterAcoesCallback, errorCallback)
+  } 
+
   useEffect(() => {
     setLoading('')
     handleListarAcoes(successObterAcoesCallback, errorCallback)
@@ -122,6 +144,14 @@ export default function Acoes() {
       <div className="flex justify-center p-4 md:p-16">
         <h1 className="text-3xl">Ações</h1>
       </div>
+      <Modal className="dark text-foreground bg-background" isOpen={isOpen} onClose={onClose} style={{backgroundColor: '#181818'}}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">Novo Aporte</ModalHeader>
+          <ModalBody>
+            <AcaoDock submitCallback={makeDock} initialValues={selectedDock} updateValue={updateDock} setUpdateFalse={()=>setUpdateDock(false)}/>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <div className="w-full">
         <Table aria-label="Tabela de ações" className="max-h-60vh">
           <TableHeader columns={columns} style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -131,7 +161,7 @@ export default function Acoes() {
               {rows.map((row) =>
               <TableRow key={row.id}>
                 {(columnKey) => <TableCell>
-                    <CelulaAcao item={row} columnKey={columnKey} editLink={`acoes/${row.id}`} onDelete={onDelete} />
+                    <CelulaAcao item={row} columnKey={columnKey} editLink={`acoes/${row.id}`} onDelete={onDelete} onDock={onDock} />
                   </TableCell>
                 }
               </TableRow>

@@ -16,3 +16,4 @@ export const FII_DELETADO_SUCESSO    = 'Fii deletado com sucesso'
 export const STATUS_OKAY             = 200
 export const TIPO_ATIVO_ACAO         = 'ACAO'
 export const TIPO_ATIVO_FII          = 'FII'
+export const APORTE_SUCESSO          = 'Aporte realizado com sucesso'
